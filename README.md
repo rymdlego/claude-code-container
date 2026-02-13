@@ -1,4 +1,4 @@
-# Claude Code Docker Container
+# Claude Code Container
 
 Containerized [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Includes Go tooling by default, but the Dockerfile can be adapted to any language or toolchain.
 
