@@ -55,4 +55,4 @@ Only the working directory is required. The others are mounted if present on the
 
 ## Permissions
 
-Tool permissions are pre-approved via `/etc/claude-code/managed-settings.json` baked into the image. This has no effect on your host-side `~/.claude/settings.json`.
+Claude Code runs with full permissions inside the container, so it operates uninterrupted without permission prompts while remaining in a safe, containerized environment.
