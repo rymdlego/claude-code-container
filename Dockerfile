@@ -2,7 +2,9 @@ FROM ubuntu:24.04
 
 ARG TARGETARCH
 
-RUN apt-get update && apt-get install -y curl git make gosu jq && \
+RUN apt-get update && apt-get install -y \
+    curl git make gosu jq \
+    build-essential pkg-config libssl-dev && \
     GO_ARCH=$([ "$TARGETARCH" = "arm64" ] && echo "arm64" || echo "amd64") && \
     curl -fsSL https://go.dev/dl/go1.25.7.linux-${GO_ARCH}.tar.gz \
     | tar -xz -C /usr/local && \
@@ -14,6 +16,12 @@ ENV PATH="/usr/local/go/bin:${PATH}"
 
 RUN useradd -m -s /bin/bash claude
 USER claude
+
+# Install Rust via rustup (includes rustc, cargo, rustfmt, clippy)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
+    . "$HOME/.cargo/env" && rustup component add rust-analyzer
+ENV PATH="/home/claude/.cargo/bin:${PATH}"
+
 RUN curl -fsSL https://claude.ai/install.sh | bash
 ENV PATH="/home/claude/.local/bin:${PATH}"
 

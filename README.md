@@ -1,11 +1,8 @@
 # Claude Code Container
 
-Containerized [Claude Code](https://docs.anthropic.com/en/docs/claude-code) with language-specific tooling. Ships with Go and Rust Dockerfiles; set `LANG` to pick one.
+Containerized [Claude Code](https://docs.anthropic.com/en/docs/claude-code) with Go and Rust tooling.
 
-| `LANG` | Dockerfile | Tooling |
-|---|---|---|
-| `go` (default) | `Dockerfile` | Go, golangci-lint |
-| `rust` | `Dockerfile.rust` | rustc, cargo, rustfmt, clippy, rust-analyzer (via rustup) |
+**Included tooling:** Go, golangci-lint, rustc, cargo, rustfmt, clippy, rust-analyzer
 
 ## Prerequisites
 
@@ -14,22 +11,18 @@ Containerized [Claude Code](https://docs.anthropic.com/en/docs/claude-code) with
 ## Quick start
 
 ```bash
-make build                # Go image (default)
-make build LANG=rust      # Rust image
+make build
 ./claude-run.sh
 ```
 
 Or install as `ccc` on your PATH:
 
 ```bash
-make install              # builds Go image and symlinks ccc -> ~/.local/bin/ccc
-make install LANG=rust    # same, but with the Rust image
+make install              # builds image and symlinks ccc -> ~/.local/bin/ccc
 ccc                       # run from any project directory
 ```
 
 ### Make targets
-
-All targets accept `LANG=go` (default) or `LANG=rust`.
 
 | Target | Description |
 |---|---|
