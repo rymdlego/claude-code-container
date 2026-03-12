@@ -4,7 +4,8 @@ ARG TARGETARCH
 
 RUN apt-get update && apt-get install -y \
     curl git make gosu jq \
-    build-essential pkg-config libssl-dev && \
+    build-essential pkg-config libssl-dev \
+    python3 python3-pip python3-venv && \
     GO_ARCH=$([ "$TARGETARCH" = "arm64" ] && echo "arm64" || echo "amd64") && \
     curl -fsSL https://go.dev/dl/go1.25.7.linux-${GO_ARCH}.tar.gz \
     | tar -xz -C /usr/local && \
@@ -22,8 +23,14 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
     . "$HOME/.cargo/env" && rustup component add rust-analyzer
 ENV PATH="/home/claude/.cargo/bin:${PATH}"
 
-RUN curl -fsSL https://claude.ai/install.sh | bash
+# Install Python dev tools
+RUN python3 -m pip install --user --break-system-packages \
+    ruff mypy pytest
 ENV PATH="/home/claude/.local/bin:${PATH}"
+
+# Cache-bust only the Claude Code install: make update-claude
+ARG CLAUDE_BUST_CACHE=0
+RUN curl -fsSL https://claude.ai/install.sh | bash
 
 USER root
 

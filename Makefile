@@ -3,13 +3,16 @@ PREFIX  := $(HOME)/.local/bin
 SYMLINK := $(PREFIX)/ccc
 RUNTIME := $(shell command -v podman 2>/dev/null || command -v docker 2>/dev/null)
 
-.PHONY: build rebuild install uninstall
+.PHONY: build rebuild update-claude install uninstall
 
 build:
 	$(RUNTIME) build -t $(IMAGE) .
 
 rebuild:
 	$(RUNTIME) build --no-cache -t $(IMAGE) .
+
+update-claude:
+	$(RUNTIME) build --build-arg CLAUDE_BUST_CACHE=$$(date +%s) -t $(IMAGE) .
 
 install: build
 	mkdir -p $(PREFIX)

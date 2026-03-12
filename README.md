@@ -1,8 +1,8 @@
 # Claude Code Container
 
-Containerized [Claude Code](https://docs.anthropic.com/en/docs/claude-code) with Go and Rust tooling.
+Containerized [Claude Code](https://docs.anthropic.com/en/docs/claude-code) with Go, Rust, and Python tooling.
 
-**Included tooling:** Go, golangci-lint, rustc, cargo, rustfmt, clippy, rust-analyzer
+**Included tooling:** Go, golangci-lint, rustc, cargo, rustfmt, clippy, rust-analyzer, python3, pip, venv, ruff, mypy, pytest
 
 ## Prerequisites
 
@@ -28,6 +28,7 @@ ccc                       # run from any project directory
 |---|---|
 | `make build` | Build the container image |
 | `make rebuild` | Build from scratch (no cache) |
+| `make update-claude` | Reinstall only Claude Code (keeps tooling cached) |
 | `make install` | Build + symlink `ccc` to `~/.local/bin` |
 | `make uninstall` | Remove the `ccc` symlink |
 
