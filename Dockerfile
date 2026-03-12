@@ -2,31 +2,30 @@ FROM ubuntu:24.04
 
 ARG TARGETARCH
 
-RUN apt-get update && apt-get install -y \
-    curl git make gosu jq \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
+    curl git make gosu jq ca-certificates \
     build-essential pkg-config libssl-dev \
     python3 python3-pip python3-venv && \
     GO_ARCH=$([ "$TARGETARCH" = "arm64" ] && echo "arm64" || echo "amd64") && \
     curl -fsSL https://go.dev/dl/go1.25.7.linux-${GO_ARCH}.tar.gz \
     | tar -xz -C /usr/local && \
     curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh \
-    | sh -s -- -b /usr/local/bin && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-ENV PATH="/usr/local/go/bin:${PATH}"
+    | sh -s -- -b /usr/local/bin
 
 RUN useradd -m -s /bin/bash claude
 USER claude
 
-# Install Rust via rustup (includes rustc, cargo, rustfmt, clippy)
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
-    . "$HOME/.cargo/env" && rustup component add rust-analyzer
-ENV PATH="/home/claude/.cargo/bin:${PATH}"
-
-# Install Python dev tools
-RUN python3 -m pip install --user --break-system-packages \
+# Install Rust via rustup + Python dev tools
+RUN --mount=type=cache,target=/home/claude/.cargo/registry,uid=1000,gid=1000 \
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
+    . "$HOME/.cargo/env" && rustup component add rust-analyzer && \
+    rm -rf "$HOME/.rustup/tmp" "$HOME/.rustup/downloads" && \
+    python3 -m pip install --user --no-cache-dir --break-system-packages \
     ruff mypy pytest
-ENV PATH="/home/claude/.local/bin:${PATH}"
+
+ENV PATH="/home/claude/.local/bin:/home/claude/.cargo/bin:/usr/local/go/bin:${PATH}"
 
 # Cache-bust only the Claude Code install: make update-claude
 ARG CLAUDE_BUST_CACHE=0
